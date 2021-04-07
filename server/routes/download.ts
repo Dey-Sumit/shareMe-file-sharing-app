@@ -7,7 +7,7 @@ router.get("/:id", async (req, res) => {
   const id = req.params.id;
 
   try {
-    const file = await File.findOne({ id });
+    const file = await File.findById(id);
     if (!file)
       return res.status(404).json({ message: "Download link is expired" });
 

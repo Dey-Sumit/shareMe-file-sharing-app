@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-button:focus {
-  outline: none;
+@layer components {
+  .button {
+    @apply w-32 p-1 mx-auto my-5 font-medium tracking-wide text-white rounded-md bg-yellow-light border-yellow-light focus:outline-none;
+  }
 }

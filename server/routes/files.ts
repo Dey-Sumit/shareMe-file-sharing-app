@@ -21,20 +21,21 @@ let upload = multer({
   storage,
 });
 
-router.post("/files", upload.single("myFile"), async (req, res) => {
+//? @handles file upload
+router.post("/upload", upload.single("myFile"), async (req, res) => {
   try {
-    //validate request
     if (!req.file) {
-      return res.json({ error: "file is required" });
+      return res.json({ error: "Bro!!! file is required" });
     }
+    const { filename, path, size } = req.file;
     const file = await File.create({
-      filename: req.file.filename,
-      path: req.file.path,
-      size: req.file.size,
+      filename,
+      path,
+      size,
     });
     return res.status(200).json({
       id: file._id,
-      donwloadPageLink: `${process.env.BASE_ENDPOINT_CLIENT}/download/${file._id}`,
+      downloadPageLink: `${process.env.BASE_ENDPOINT_CLIENT}/download/${file._id}`,
     });
   } catch (error) {
     console.log(error.message);
@@ -43,7 +44,9 @@ router.post("/files", upload.single("myFile"), async (req, res) => {
   }
 });
 
-router.post("/files/email", async (req, res) => {
+//? @ handles email service
+
+router.post("/email", async (req, res) => {
   const { emailTo, emailFrom, id } = req.body;
 
   // validate request
@@ -51,8 +54,11 @@ router.post("/files/email", async (req, res) => {
     return res.status(400).json({ message: "All fields are required" });
 
   const file = await File.findById(id);
+
   if (file && file.sender)
     return res.status(422).json({ message: "Email is already sent" });
+
+  // if the file exists
   if (file) {
     const downloadLink = `${process.env.BASE_ENDPOINT_CLIENT}/download/${file._id}`;
     const fileSize = `${(Number(file.size) / (1024 * 1024)).toFixed(2)} MB`;
@@ -66,6 +72,7 @@ router.post("/files/email", async (req, res) => {
         pass: process.env.SENDINBLUE_SMTP_PASSWORD,
       },
     });
+    
     // setup e-mail data with unicode symbols
     var mailOptions = {
       from: emailFrom, // sender address
@@ -95,4 +102,26 @@ router.post("/files/email", async (req, res) => {
     });
   }
 });
+
+//? @ returns the download link
+router.get("/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const file = await File.findById(id);
+    if (!file) {
+      return res.status(404).json({ message: "File not found" });
+    }
+    const { filename, size } = file;
+    const downloadLink = `${process.env.BASE_ENDPOINT_CLIENT}/download/${file._id}`;
+    return res.status(200).json({
+      id,
+      filename,
+      size,
+      downloadLink,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Server Error" });
+  }
+});
+
 export default router;

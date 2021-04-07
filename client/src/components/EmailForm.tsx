@@ -1,5 +1,5 @@
 import axios from "axios";
-import { FormEventHandler, FunctionComponent, useState } from "react";
+import { FunctionComponent, useState } from "react";
 
 const EmailForm: FunctionComponent<{ id: string }> = ({ id }) => {
   const [emailFrom, setEmailFrom] = useState("");
@@ -22,7 +22,7 @@ const EmailForm: FunctionComponent<{ id: string }> = ({ id }) => {
     }
   };
   return (
-    <div className="flex flex-col justify-center items-center mt-4 space-y-3 ">
+    <div className="flex flex-col items-center justify-center mt-4 space-y-3 ">
       <h3>You can also send the link through mail directly</h3>
       <form
         onSubmit={handleEmail}
@@ -45,7 +45,7 @@ const EmailForm: FunctionComponent<{ id: string }> = ({ id }) => {
           required
         />
         <button
-          className="w-32 p-1 focus:outline-none mx-auto my-5 font-medium tracking-wide text-white rounded-md bg-yellow-light border-yellow-light"
+          className="w-32 p-1 mx-auto my-5 font-medium tracking-wide text-white rounded-md focus:outline-none bg-yellow-light border-yellow-light"
           type="submit"
         >
           Email
